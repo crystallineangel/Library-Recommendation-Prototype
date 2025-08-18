@@ -136,7 +136,7 @@ def get_recs(df, title):
     feature_matrix_dense = feature_matrix.toarray()
 
     # sets up the nearest neighbors algorithm
-    knn = NearestNeighbors(n_neighbors=10, metric = 'cosine')  # closest 10
+    knn = NearestNeighbors(n_neighbors=10, metric = 'cosine', algorithm = 'ball_tree')  # closest 10
     knn.fit(feature_matrix_dense) # trains
 
     book_index = df[df['title'] == title].index[0]
