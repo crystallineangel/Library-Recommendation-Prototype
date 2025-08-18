@@ -45,7 +45,7 @@ with col1:
         st.error("Please select at least one genre to get recommendations!")
 
 with col2:
-    st.image("prototype/bm.jpg", use_container_width=True)
+    st.image("bm.jpg", use_container_width=True)
 
 with col3:
     st.header("Just like your faves")
