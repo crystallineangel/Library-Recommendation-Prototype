@@ -75,7 +75,7 @@ with col3:
             st.write(f"Hi, here are your recommendations!")
 
             if not_enough_recs == True:
-                st.write(f"Only found {len(final_recs)} books instead of {rec_num} in our current library!")
+                st.write(f"Only found {len(recommended_books)} books instead of {rec_num} in our current library!")
 
             for idx, row in recommended_books.iterrows():
                 name = str(row['title'])
