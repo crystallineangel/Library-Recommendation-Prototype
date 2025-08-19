@@ -10,6 +10,7 @@ import numpy as np
 from scipy.sparse import hstack
 from sklearn.neighbors import NearestNeighbors
 from streamlit import title
+from langdetect import detect # for detecting book language, idea from ChatGPT
 
 # streamlit needs the prototype/combined thing
 df = pd.read_csv("complete_data.csv")
@@ -128,22 +129,31 @@ def get_recs(df, title):
     df_genres = genre_binary(df)
     descr_matrix = descr_numerical(df)
 
+    # takes the book
+    book_index = df[df['title'] == title].index[0] # creates a mini dataframe with only the matching book title, index[0] is the first item
+    book_genres = df.loc[book_index, 'genre'] # finds a list of genres for said book
+    book_lang = detect(title) # identifies the book language using its title
+
     """Features matrix to be used with NN"""
     feature_matrix = hstack([df_genres, descr_matrix, np.array(df['rating']).reshape(-1, 1)])
 
     # converts the matrix into a dense one so that things work out
     # solution given by ChatGPT
     feature_matrix_dense = feature_matrix.toarray()
-
     # sets up the nearest neighbors algorithm
-    knn = NearestNeighbors(n_neighbors=10, algorithm = 'ball_tree')  # closest 10
+    for genre in book_genres: # 3 books for nonfiction, 10 for fiction
+        if genre == 'nonfiction':
+            rec_num = 3
+    rec_num = 10
+    knn = NearestNeighbors(n_neighbors = rec_num + 1, algorithm = 'ball_tree')  # closest 10, first one excluded so +1
     knn.fit(feature_matrix_dense) # trains
+        
+    distances, indices = knn.kneighbors(feature_matrix_dense[book_index].reshape(1, -1), n_neighbors = rec_num + 1)
+        
+    recommended_books = df.iloc[indices[0][1:]]  # exclude the first result (same book)
 
-    book_index = df[df['title'] == title].index[0]
-
-    distances, indices = knn.kneighbors(feature_matrix_dense[book_index].reshape(1, -1), n_neighbors=10)
-
-    recommended_books = df.iloc[indices[0][1:]]  # Exclude the first result (same book)
+    # same detected language, code given by ChatGPT
+    recommended_books = recommended_books[recommended_books['title'].apply(lambda t: detect(t) == book_lang)]
 
     return recommended_books[['title', 'author']]
 
