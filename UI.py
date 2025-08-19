@@ -68,14 +68,14 @@ with col3:
     if st_s.book_button and st_s.selected_book is not None:
         st_s.actual_title = st_s.selected_book.split(' -- ')[0]
 
-        recommended_books = rec.get_recs(df, st_s.actual_title)
+        recommended_books, rec_num, not_enough_recs = rec.get_recs(df, st_s.actual_title)
 
         if not recommended_books.empty:
             st.divider()
             st.write(f"Hi, here are your recommendations!")
 
-            if rec.not_enough_recs == True:
-                st.write(f"Only found {len(rec.final_recs)} books instead of {rec.rec_num} in our current library!")
+            if not_enough_recs == True:
+                st.write(f"Only found {len(final_recs)} books instead of {rec_num} in our current library!")
 
             for idx, row in recommended_books.iterrows():
                 name = str(row['title'])
