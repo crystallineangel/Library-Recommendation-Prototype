@@ -141,21 +141,26 @@ def get_recs(df, title):
     # solution given by ChatGPT
     feature_matrix_dense = feature_matrix.toarray()
     # sets up the nearest neighbors algorithm
-    for genre in book_genres: # 3 books for nonfiction, 10 for fiction
-        if genre == 'nonfiction':
-            rec_num = 3
-    rec_num = 10
-    knn = NearestNeighbors(n_neighbors = rec_num + 1, algorithm = 'ball_tree')  # closest 10, first one excluded so +1
+    if 'nonfiction' in book_genres: # 3 books for nonfiction, 10 for fiction
+        rec_num = 3
+    else:
+        rec_num = 10
+
+    buffer = rec_num * 5 # to avoid having fewer books since diff languages get filtered out
+    knn = NearestNeighbors(n_neighbors = buffer + 1, algorithm = 'ball_tree')
     knn.fit(feature_matrix_dense) # trains
         
-    distances, indices = knn.kneighbors(feature_matrix_dense[book_index].reshape(1, -1), n_neighbors = rec_num + 1)
+    distances, indices = knn.kneighbors(feature_matrix_dense[book_index].reshape(1, -1), n_neighbors = buffer + 1)
         
     recommended_books = df.iloc[indices[0][1:]]  # exclude the first result (same book)
 
     # same detected language, code given by ChatGPT
     recommended_books = recommended_books[recommended_books['title'].apply(lambda t: detect(t) == book_lang)]
 
-    return recommended_books[['title', 'author']]
+    final_recs = recommended_books.head(rec_num)
+    if final_recs < rec_num:
+        not_enough_recs = True
+    return final_recs[['title', 'author']]
 
 def get_rating(df, title):
     matching_row = df[df['title'].str.lower() == title.lower()]
