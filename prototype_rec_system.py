@@ -160,7 +160,7 @@ def get_recs(df, title):
     final_recs = recommended_books.head(rec_num)
     if len(final_recs) < rec_num:
         not_enough_recs = True
-    return final_recs[['title', 'author']]
+    return final_recs[['title', 'author']], rec_num, not_enough_recs
 
 def get_rating(df, title):
     matching_row = df[df['title'].str.lower() == title.lower()]
