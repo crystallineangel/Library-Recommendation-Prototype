@@ -74,7 +74,7 @@ with col3:
             st.divider()
             st.write(f"Hi, here are your recommendations!")
 
-            if rec.not_enough_recs = True:
+            if rec.not_enough_recs == True:
                 st.write(f"Only found {len(rec.final_recs)} books instead of {len(rec.rec_num)} in our current library!")
 
             for idx, row in recommended_books.iterrows():
