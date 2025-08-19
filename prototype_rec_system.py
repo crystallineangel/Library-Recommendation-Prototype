@@ -158,8 +158,7 @@ def get_recs(df, title):
     recommended_books = recommended_books[recommended_books['title'].apply(lambda t: detect(t) == book_lang)]
 
     final_recs = recommended_books.head(rec_num)
-    if len(final_recs) < rec_num:
-        not_enough_recs = True
+    not_enough_recs = len(final_recs) < rec_num:
     return final_recs[['title', 'author']], rec_num, not_enough_recs
 
 def get_rating(df, title):
